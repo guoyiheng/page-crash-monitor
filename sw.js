@@ -4,7 +4,10 @@ const CRASH_THRESHOLD = 10000
 
 // send log
 function _sendlog(data) {
-  console.log(`%c${JSON.stringify(data)}`, 'padding: 0.3rem 1.5rem; font-family: Roboto; font-size: 1.2em; line-height: 1.4em; color: white; background-color: #4158D0; background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);')
+  console.log(
+    `%c${JSON.stringify(data)}`,
+    'padding: 0.3rem 1.5rem; font-family: Roboto; font-size: 1.2em; line-height: 1.4em; color: white; background-color: #4158D0; background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);'
+  )
   // TODO 切换上报url
   const url = 'http://localhost:3000/log'
   fetch(url, {
@@ -23,12 +26,11 @@ function initLogSWCrashWatch() {
   function _checkCrash() {
     console.log('check', pages)
     const now = Date.now()
-    Object.keys(pages).forEach((id) => {
+    Object.keys(pages).forEach(id => {
       const page = pages[id]
-      if ((now - page.lastReportDate) > CRASH_THRESHOLD) {
+      if (now - page.lastReportDate > CRASH_THRESHOLD) {
         let surviveTime
-        if (page.data.openDate)
-          surviveTime = page.lastReportDate - page.data.openDate
+        if (page.data.openDate) surviveTime = page.lastReportDate - page.data.openDate
         console.log('==== crash ====', page, surviveTime)
         page.data = {
           ...page.data,
@@ -44,7 +46,7 @@ function initLogSWCrashWatch() {
     }
   }
   // monitor message
-  self.addEventListener('message', (e) => {
+  self.addEventListener('message', e => {
     const eventData = e.data
     console.log('eventData', eventData)
     if (eventData.type === 'heartbeat') {
@@ -57,21 +59,19 @@ function initLogSWCrashWatch() {
           _checkCrash()
         }, CHECK_CRASH_INTERVAL)
       }
-    }
-    else if (eventData.type === 'unload') {
+    } else if (eventData.type === 'unload') {
       _sendlog(eventData)
       delete pages[eventData.id]
-    }
-    else if (eventData.type === 'start') {
+    } else if (eventData.type === 'start') {
       _sendlog(eventData)
     }
   })
 
-  self.addEventListener('install', (event) => {
+  self.addEventListener('install', event => {
     event.waitUntil(self.skipWaiting())
   })
 
-  self.addEventListener('activate', (event) => {
+  self.addEventListener('activate', event => {
     event.waitUntil(self.clients.claim())
   })
 }
