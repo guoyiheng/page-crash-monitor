@@ -66,7 +66,7 @@ function initLogSWCrashWatch() {
       _sendlog(eventData)
     }
   })
-  // TODO 强制刷新丢失controller问题
+
   self.addEventListener('install', (event) => {
     event.waitUntil(self.skipWaiting())
   })
